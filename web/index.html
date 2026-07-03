@@ -2,47 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Equipment JSON Creator</title>
+    <title>Equipment JSON Manager</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
 
-    <h1>Equipment JSON Creator</h1>
+    <h1>Equipment JSON Manager</h1>
 
+    <!-- MAIN STATS -->
     <div class="card">
-
         <h2>Main Stats</h2>
 
         <div class="row">
             <label>ATK</label>
-            <input type="number" id="mainATK" value="">
+            <input type="number" id="mainATK">
         </div>
 
         <div class="row">
             <label>HP</label>
-            <input type="number" id="mainHP" value="">
+            <input type="number" id="mainHP">
         </div>
-
     </div>
 
+    <!-- SUB STATS -->
     <div class="card">
-
         <h2>Sub Stats</h2>
-
         <div id="subStats"></div>
-
     </div>
 
-    <button id="downloadBtn">
-        Download JSON
-    </button>
+    <div class="buttons">
+        <button onclick="addEquipment()">Add Equipment</button>
+        <button onclick="clearForm()">Clear</button>
+        <button onclick="downloadJSON()">Download JSON</button>
+    </div>
+
+    <!-- SELECTED -->
+    <h2>Selected (max 4)</h2>
+    <div id="selected" class="grid"></div>
+
+    <!-- LIBRARY -->
+    <h2>Library</h2>
+    <div id="library" class="library"></div>
 
 </div>
 
 <script src="script.js"></script>
-
 </body>
 </html>
