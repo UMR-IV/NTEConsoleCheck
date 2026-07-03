@@ -89,7 +89,7 @@ function toggleSelect(id){
 
     const item = equipment.find(e=>e.id===id);
 
-    if(!item.selected && selected.length>=4){
+    if(!item.selected && selected.length>=20){
         alert("Max 4 selected");
         return;
     }
