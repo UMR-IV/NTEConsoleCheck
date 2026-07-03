@@ -10,8 +10,10 @@
 <div class="container">
 
     <h1>Equipment JSON Manager</h1>
-
-    <!-- MAIN STATS -->
+    <div class="buttons">
+        <button onclick="downloadJSON()">Download JSON</button>
+    </div>
+<!-- 
     <div class="card">
         <h2>Main Stats</h2>
 
@@ -26,7 +28,6 @@
         </div>
     </div>
 
-    <!-- SUB STATS -->
     <div class="card">
         <h2>Sub Stats</h2>
         <div id="subStats"></div>
@@ -37,7 +38,7 @@
         <button onclick="clearForm()">Clear</button>
         <button onclick="downloadJSON()">Download JSON</button>
     </div>
-
+ -->
     <!-- SELECTED -->
     <div class="card">
         <h2>Selected (max 20)</h2>
@@ -51,7 +52,57 @@
     </div>
 
 </div>
+<!-- Floating Add Button -->
+<button onclick="downloadJSON()" class="fab2">
+    <img src="./assets/download_icon.svg"/>
+</button>
+<button id="openModalBtn" class="fab">+</button>
 
+<!-- MODAL -->
+<div id="modal" class="modal hidden">
+
+    <div class="modalContent">
+
+        <div class="modalHeader">
+            <h2>Add / Import Equipment</h2>
+            <button onclick="closeModal()">✖</button>
+        </div>
+
+        <!-- IMPORT JSON -->
+        <div class="uploadBox">
+            <input type="file" id="fileInput" accept=".json">
+            <button onclick="importJSON()">Upload JSON</button>
+        </div>
+
+        <hr>
+
+        <!-- YOUR EXISTING FORM MOVED HERE -->
+        <div class="card">
+            <h3>Main Stats</h3>
+
+            <div class="row">
+                <label>ATK</label>
+                <input type="number" id="mainATK">
+            </div>
+
+            <div class="row">
+                <label>HP</label>
+                <input type="number" id="mainHP">
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Sub Stats</h3>
+            <div id="subStats"></div>
+        </div>
+
+        <div class="modalActions">      
+            <button onclick="clearForm()">Clear</button>
+            <button onclick="addEquipment()">Save Equipment</button>
+        </div>
+
+    </div>
+</div>
 <script src="script.js"></script>
 </body>
 </html>

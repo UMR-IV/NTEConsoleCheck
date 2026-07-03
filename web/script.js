@@ -48,6 +48,53 @@ for(let i=0;i<4;i++){
     subContainer.appendChild(row);
 }
 
+const modal = document.getElementById("modal");
+
+document.getElementById("openModalBtn").onclick = () => {
+    modal.classList.remove("hidden");
+};
+
+function closeModal(){
+    modal.classList.add("hidden");
+}
+
+function importJSON(){
+
+    const file = document.getElementById("fileInput").files[0];
+
+    if(!file){
+        alert("Select a JSON file first");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+
+        try{
+            const data = JSON.parse(e.target.result);
+
+            if(!data.equipment){
+                alert("Invalid JSON format");
+                return;
+            }
+
+            // merge into existing data
+            equipment = [...equipment, ...data.equipment];
+
+            save();
+            render();
+
+            alert("Imported successfully!");
+
+        }catch(err){
+            alert("Invalid JSON file");
+        }
+    };
+
+    reader.readAsText(file);
+}
+
 // ADD EQUIPMENT
 function addEquipment(){
 
@@ -82,6 +129,7 @@ function addEquipment(){
     save();
     render();
     clearForm();
+    closeModal();
 }
 
 // SELECT / UNSELECT
