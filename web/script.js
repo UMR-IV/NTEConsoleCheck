@@ -12,35 +12,70 @@ const options = [
     "DMG %"
 ];
 
-let equipment = JSON.parse(localStorage.getItem("eq")) || [];
-let selected = [];
+const tabs = ["character", "cartridge", "module"];
+const tabLabels = {
+    character: "Character",
+    cartridge: "Cartridge",
+    module: "Module"
+};
+
+let activeTab = "character";
+let data = {
+    character: [],
+    cartridge: [],
+    module: []
+};
+
+let editModeId = null;
+
+function loadData() {
+    tabs.forEach((tab) => {
+        const stored = localStorage.getItem(`eq_${tab}`);
+        if (stored) {
+            data[tab] = JSON.parse(stored);
+        } else if (tab === "cartridge") {
+            const legacy = JSON.parse(localStorage.getItem("eq") || "null");
+            data[tab] = legacy || [];
+        }
+    });
+}
+
+function save() {
+    tabs.forEach((tab) => {
+        localStorage.setItem(`eq_${tab}`, JSON.stringify(data[tab]));
+    });
+
+    localStorage.setItem("eq", JSON.stringify(data.cartridge));
+}
+
+function getCurrentItems() {
+    return data[activeTab] || [];
+}
 
 const subContainer = document.getElementById("subStats");
 
-// create 4 sub slots
-for(let i=0;i<4;i++){
-
+for (let i = 0; i < 4; i++) {
     const row = document.createElement("div");
-    row.className="row";
+    row.className = "row";
 
     const select = document.createElement("select");
-    select.id = "subName"+i;
+    select.id = "subName" + i;
 
     const empty = document.createElement("option");
-    empty.value="";
-    empty.textContent="--";
+    empty.value = "";
+    empty.textContent = "--";
     select.appendChild(empty);
 
-    options.forEach(o=>{
-        const op=document.createElement("option");
-        op.value=o;
-        op.textContent=o;
+    options.forEach((option) => {
+        const op = document.createElement("option");
+        op.value = option;
+        op.textContent = option;
         select.appendChild(op);
     });
 
     const val = document.createElement("input");
-    val.type="number";
-    val.id="subVal"+i;
+    val.type = "number";
+    val.id = "subVal" + i;
 
     row.appendChild(select);
     row.appendChild(val);
@@ -49,45 +84,68 @@ for(let i=0;i<4;i++){
 }
 
 const modal = document.getElementById("modal");
+const emptyState = document.getElementById("emptyState");
+const contentArea = document.getElementById("contentArea");
+const panelTitle = document.getElementById("panelTitle");
+const modalTitle = document.getElementById("modalTitle");
+
+function setActiveTab(tab) {
+    activeTab = tab;
+
+    document.querySelectorAll(".tabBtn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.tab === tab);
+    });
+
+    if (tab === "character") {
+        emptyState.classList.remove("hidden");
+        contentArea.classList.add("hidden");
+    } else {
+        emptyState.classList.add("hidden");
+        contentArea.classList.remove("hidden");
+    }
+
+    panelTitle.textContent = tabLabels[tab];
+    modalTitle.textContent = `Add / Import ${tabLabels[tab]}`;
+    render();
+}
+
+document.querySelectorAll(".tabBtn").forEach((btn) => {
+    btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
+});
 
 document.getElementById("openModalBtn").onclick = () => {
     modal.classList.remove("hidden");
 };
 
-function closeModal(){
+function closeModal() {
     modal.classList.add("hidden");
 }
 
-function importJSON(){
-
+function importJSON() {
     const file = document.getElementById("fileInput").files[0];
 
-    if(!file){
+    if (!file) {
         alert("Select a JSON file first");
         return;
     }
 
     const reader = new FileReader();
 
-    reader.onload = function(e){
+    reader.onload = function (e) {
+        try {
+            const parsed = JSON.parse(e.target.result);
+            const imported = Array.isArray(parsed) ? parsed : parsed.equipment || parsed[activeTab] || [];
 
-        try{
-            const data = JSON.parse(e.target.result);
-
-            if(!data.equipment){
+            if (!Array.isArray(imported)) {
                 alert("Invalid JSON format");
                 return;
             }
 
-            // merge into existing data
-            equipment = [...equipment, ...data.equipment];
-
+            data[activeTab] = [...data[activeTab], ...imported];
             save();
             render();
             closeModal();
-            // alert("Imported successfully!");
-
-        }catch(err){
+        } catch (err) {
             alert("Invalid JSON file");
         }
     };
@@ -95,9 +153,7 @@ function importJSON(){
     reader.readAsText(file);
 }
 
-// ADD EQUIPMENT
-function addEquipment(){
-
+function addEquipment() {
     const main = {
         ATK: Number(document.getElementById("mainATK").value || 0),
         HP: Number(document.getElementById("mainHP").value || 0)
@@ -106,25 +162,33 @@ function addEquipment(){
     const sub = {};
     const used = new Set();
 
-    for(let i=0;i<4;i++){
+    for (let i = 0; i < 4; i++) {
+        const name = document.getElementById("subName" + i).value;
+        const val = Number(document.getElementById("subVal" + i).value || 0);
 
-        const name = document.getElementById("subName"+i).value;
-        const val = Number(document.getElementById("subVal"+i).value || 0);
-
-        if(name && !used.has(name)){
+        if (name && !used.has(name)) {
             sub[name] = val;
             used.add(name);
         }
     }
 
-    const item = {
-        id: Date.now(),
-        main,
-        sub,
-        selected:false
-    };
+    const items = getCurrentItems();
 
-    equipment.push(item);
+    if (editModeId !== null) {
+        const item = items.find((entry) => entry.id === editModeId);
+        if (item) {
+            item.main = main;
+            item.sub = sub;
+        }
+        editModeId = null;
+    } else {
+        items.push({
+            id: Date.now(),
+            main,
+            sub,
+            selected: false
+        });
+    }
 
     save();
     render();
@@ -132,190 +196,124 @@ function addEquipment(){
     closeModal();
 }
 
-// SELECT / UNSELECT
-function toggleSelect(id){
+function toggleSelect(id) {
+    const items = getCurrentItems();
+    const item = items.find((entry) => entry.id === id);
 
-    const item = equipment.find(e=>e.id===id);
+    if (!item) return;
 
-    if(!item.selected && selected.length>=20){
+    if (!item.selected && items.filter((entry) => entry.selected).length >= 20) {
         alert("Max 20 selected");
         return;
     }
 
     item.selected = !item.selected;
-
-    selected = equipment.filter(e=>e.selected);
-
     save();
     render();
 }
 
-// DELETE
-function deleteItem(id){
-    equipment = equipment.filter(e=>e.id!==id);
-    selected = equipment.filter(e=>e.selected);
+function deleteItem(id) {
+    const items = getCurrentItems();
+    data[activeTab] = items.filter((entry) => entry.id !== id);
     save();
     render();
 }
 
-// CLEAR FORM
-function clearForm(){
+function clearForm() {
+    document.getElementById("mainATK").value = "";
+    document.getElementById("mainHP").value = "";
 
-    document.getElementById("mainATK").value="";
-    document.getElementById("mainHP").value="";
-
-    for(let i=0;i<4;i++){
-        document.getElementById("subName"+i).value="";
-        document.getElementById("subVal"+i).value="";
+    for (let i = 0; i < 4; i++) {
+        document.getElementById("subName" + i).value = "";
+        document.getElementById("subVal" + i).value = "";
     }
 }
 
-// RENDER
-function render(){
-
+function render() {
     const selDiv = document.getElementById("selected");
     const libDiv = document.getElementById("library");
 
-    selDiv.innerHTML="";
-    libDiv.innerHTML="";
+    selDiv.innerHTML = "";
+    libDiv.innerHTML = "";
 
-    equipment.forEach(e=>{
+    if (activeTab === "character") {
+        return;
+    }
 
+    const items = getCurrentItems();
+
+    items.forEach((entry) => {
         const box = document.createElement("div");
-        box.className="cardBox";
+        box.className = "cardBox";
 
         box.innerHTML = `
         <div class="cardTop">
-
             <div class="cardStats">
-                <b>ATK:</b> ${e.main.ATK}<br>
-                <b>HP:</b> ${e.main.HP}<br><br>
+                <b>ATK:</b> ${entry.main.ATK}<br>
+                <b>HP:</b> ${entry.main.HP}<br><br>
 
-                ${Object.entries(e.sub)
-                    .map(([k,v]) => `${k}: ${v}`)
+                ${Object.entries(entry.sub)
+                    .map(([key, value]) => `${key}: ${value}`)
                     .join("<br>")}
             </div>
 
-            <button class="editBtn" onclick="editItem(${e.id})">
-                ✏️
-            </button>
-
+            <button class="editBtn" onclick="editItem(${entry.id})">✏️</button>
         </div>
 
         <div class="cardButtons">
-
-            <button onclick="toggleSelect(${e.id})">
-                ${e.selected ? "Unselect" : "Select"}
+            <button onclick="toggleSelect(${entry.id})">
+                ${entry.selected ? "Unselect" : "Select"}
             </button>
+            <button onclick="deleteItem(${entry.id})">🗑️</button>
+        </div>`;
 
-            <button onclick="deleteItem(${e.id})">
-                🗑️
-            </button>
-
-        </div>
-        `;
-
-        if(e.selected){
+        if (entry.selected) {
             selDiv.appendChild(box);
-        } else{
+        } else {
             libDiv.appendChild(box);
         }
     });
 }
 
-// SAVE
-function save(){
-    localStorage.setItem("eq", JSON.stringify(equipment));
-}
-
-// DOWNLOAD JSON
-function downloadJSON(){
-    const blob = new Blob([JSON.stringify({equipment},null,2)],{
-        type:"application/json"
+function downloadJSON() {
+    const blob = new Blob([JSON.stringify({
+        character: data.character,
+        cartridge: data.cartridge,
+        module: data.module
+    }, null, 2)], {
+        type: "application/json"
     });
 
     const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "equipment.json";
-    a.click();
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "console-optimizer.json";
+    link.click();
 
     URL.revokeObjectURL(url);
 }
 
-let editModeId = null;
+function editItem(id) {
+    const items = getCurrentItems();
+    const item = items.find((entry) => entry.id === id);
 
-function editItem(id){
+    if (!item) return;
 
-    const item = equipment.find(e => e.id === id);
-    if(!item) return;
-
-    // fill form
     document.getElementById("mainATK").value = item.main.ATK;
     document.getElementById("mainHP").value = item.main.HP;
 
     const keys = Object.keys(item.sub);
     const values = Object.values(item.sub);
 
-    for(let i=0;i<4;i++){
-
-        document.getElementById("subName"+i).value = keys[i] || "";
-        document.getElementById("subVal"+i).value = values[i] || "";
+    for (let i = 0; i < 4; i++) {
+        document.getElementById("subName" + i).value = keys[i] || "";
+        document.getElementById("subVal" + i).value = values[i] || "";
     }
 
     editModeId = id;
-
+    modal.classList.remove("hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-function addEquipment(){
-
-    const main = {
-        ATK: Number(document.getElementById("mainATK").value || 0),
-        HP: Number(document.getElementById("mainHP").value || 0)
-    };
-
-    const sub = {};
-    const used = new Set();
-
-    for(let i=0;i<4;i++){
-
-        const name = document.getElementById("subName"+i).value;
-        const val = Number(document.getElementById("subVal"+i).value || 0);
-
-        if(name && !used.has(name)){
-            sub[name] = val;
-            used.add(name);
-        }
-    }
-
-    // ✅ EDIT MODE (update existing)
-    if(editModeId !== null){
-
-        const item = equipment.find(e => e.id === editModeId);
-        if(item){
-
-            item.main = main;
-            item.sub = sub;
-        }
-
-        editModeId = null;
-    }
-    else {
-        // NEW ITEM
-        equipment.push({
-            id: Date.now(),
-            main,
-            sub,
-            selected:false
-        });
-    }
-
-    save();
-    render();
-    clearForm();
-}
-
-// INIT
-render();
+loadData();
+setActiveTab(activeTab);

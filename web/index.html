@@ -2,25 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Equipment JSON Manager</title>
+    <title>Console Optimizer</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
 
-    <h1>Equipment JSON Manager</h1>
+    <h1>Console Optimizer</h1>
 
-    <!-- SELECTED -->
-    <div class="card">
-        <h2>Selected (max 20)</h2>
-        <div id="selected" class="grid"></div>
+    <div class="tabs" id="tabs">
+        <button class="tabBtn active" data-tab="character">Character</button>
+        <button class="tabBtn" data-tab="cartridge">Cartridge</button>
+        <button class="tabBtn" data-tab="module">Module</button>
     </div>
 
-    <!-- LIBRARY -->
     <div class="card">
-        <h2>Library</h2>
-        <div id="library" class="library"></div>
+        <h2 id="panelTitle">Character</h2>
+
+        <div id="emptyState" class="emptyState">
+            <p>This tab is intentionally left blank for character setup.</p>
+        </div>
+
+        <div id="contentArea" class="hidden">
+            <div class="card">
+                <h2>Selected (max 20)</h2>
+                <div id="selected" class="grid"></div>
+            </div>
+
+            <div class="card">
+                <h2>Library</h2>
+                <div id="library" class="library"></div>
+            </div>
+        </div>
     </div>
 
 </div>
@@ -36,11 +50,10 @@
     <div class="modalContent">
 
         <div class="modalHeader">
-            <h2>Add / Import Equipment</h2>
+            <h2 id="modalTitle">Add / Import Item</h2>
             <button onclick="closeModal()">✖</button>
         </div>
 
-        <!-- IMPORT JSON -->
         <div class="uploadBox">
             <input type="file" id="fileInput" accept=".json">
             <button onclick="importJSON()">Upload JSON</button>
@@ -48,7 +61,6 @@
 
         <hr>
 
-        <!-- YOUR EXISTING FORM MOVED HERE -->
         <div class="card">
             <h3>Main Stats</h3>
 
@@ -68,9 +80,9 @@
             <div id="subStats"></div>
         </div>
 
-        <div class="modalActions">      
+        <div class="modalActions">
             <button onclick="clearForm()">Clear</button>
-            <button onclick="addEquipment()">Save Equipment</button>
+            <button onclick="addEquipment()">Save Item</button>
         </div>
 
     </div>

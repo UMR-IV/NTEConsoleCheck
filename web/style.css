@@ -15,6 +15,24 @@ h1,h2{
     text-align:center;
 }
 
+.tabs{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin:20px 0;
+}
+
+.tabBtn{
+    background:#334155;
+    color:white;
+    padding:10px 16px;
+    border-radius:999px;
+}
+
+.tabBtn.active{
+    background:#3b82f6;
+}
+
 .card{
     background:#1e293b;
     padding:15px;
@@ -71,6 +89,7 @@ button{
     display:flex;
     flex-direction:column;
     justify-content:space-between;
+    position:relative;
 }
 
 .library{
@@ -101,18 +120,12 @@ button{
     box-shadow:0 4px 10px rgba(0,0,0,.3);
 }
 
-.cardBox{
-    position:relative;
-}
-
-/* top section layout */
 .cardTop{
     display:flex;
     justify-content:space-between;
     align-items:flex-start;
 }
 
-/* pencil button top-right */
 .editBtn{
     position:absolute;
     top:8px;
@@ -139,6 +152,12 @@ button{
 .editBtn:hover{
     background:#3b82f6;
     transform:scale(1.1);
+}
+
+.emptyState{
+    text-align:center;
+    padding:20px;
+    color:#cbd5e1;
 }
 
 .fab{
