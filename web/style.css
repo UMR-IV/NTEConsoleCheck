@@ -56,22 +56,32 @@ button{
 .grid{
     display:grid;
     grid-template-columns:repeat(4,1fr);
-    gap:10px;
+    gap:12px;
+
+    max-height:550px;
+    overflow-y:auto;
 }
 
 .cardBox{
     background:#334155;
-    padding:10px;
     border-radius:10px;
+    padding:12px;
+    min-height:230px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
 }
 
 .library{
-    max-height:300px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:12px;
+
+    max-height:500px;
     overflow-y:auto;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    margin-top:10px;
+
+    padding-right:5px;
 }
 
 .item{
@@ -81,4 +91,52 @@ button{
     display:flex;
     justify-content:space-between;
     align-items:center;
+}
+
+.card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:20px;
+    box-shadow:0 4px 10px rgba(0,0,0,.3);
+}
+
+.cardBox{
+    position:relative;
+}
+
+/* top section layout */
+.cardTop{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+}
+
+/* pencil button top-right */
+.editBtn{
+    position:absolute;
+    top:8px;
+    right:8px;
+
+    width:32px;
+    height:32px;
+
+    border:none;
+    border-radius:8px;
+
+    background:#1f2937;
+    color:white;
+
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    transition:0.2s;
+}
+
+.editBtn:hover{
+    background:#3b82f6;
+    transform:scale(1.1);
 }

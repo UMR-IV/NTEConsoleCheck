@@ -136,33 +136,41 @@ function render(){
         const box = document.createElement("div");
         box.className="cardBox";
 
-        box.innerHTML=`
-            <b>ATK:</b> ${e.main.ATK}<br>
-            <b>HP:</b> ${e.main.HP}<br><br>
-            ${Object.entries(e.sub).map(([k,v])=>`${k}: ${v}`).join("<br>")}
-            <br><br>
-            <button onclick="toggleSelect(${e.id})">
-                ${e.selected?"Unselect":"Select"}
+        box.innerHTML = `
+        <div class="cardTop">
+
+            <div class="cardStats">
+                <b>ATK:</b> ${e.main.ATK}<br>
+                <b>HP:</b> ${e.main.HP}<br><br>
+
+                ${Object.entries(e.sub)
+                    .map(([k,v]) => `${k}: ${v}`)
+                    .join("<br>")}
+            </div>
+
+            <button class="editBtn" onclick="editItem(${e.id})">
+                ✏️
             </button>
-            <button onclick="deleteItem(${e.id})">Delete</button>
+
+        </div>
+
+        <div class="cardButtons">
+
+            <button onclick="toggleSelect(${e.id})">
+                ${e.selected ? "Unselect" : "Select"}
+            </button>
+
+            <button onclick="deleteItem(${e.id})">
+                🗑️
+            </button>
+
+        </div>
         `;
 
         if(e.selected){
             selDiv.appendChild(box);
-        } else {
-            const item = document.createElement("div");
-            item.className="item";
-            item.innerHTML=`
-                <div>
-                    <b>ATK:</b> ${e.main.ATK} |
-                    <b>HP:</b> ${e.main.HP}
-                </div>
-                <div>
-                    <button onclick="toggleSelect(${e.id})">Select</button>
-                    <button onclick="deleteItem(${e.id})">X</button>
-                </div>
-            `;
-            libDiv.appendChild(item);
+        } else{
+            libDiv.appendChild(box);
         }
     });
 }
@@ -186,6 +194,79 @@ function downloadJSON(){
     a.click();
 
     URL.revokeObjectURL(url);
+}
+
+let editModeId = null;
+
+function editItem(id){
+
+    const item = equipment.find(e => e.id === id);
+    if(!item) return;
+
+    // fill form
+    document.getElementById("mainATK").value = item.main.ATK;
+    document.getElementById("mainHP").value = item.main.HP;
+
+    const keys = Object.keys(item.sub);
+    const values = Object.values(item.sub);
+
+    for(let i=0;i<4;i++){
+
+        document.getElementById("subName"+i).value = keys[i] || "";
+        document.getElementById("subVal"+i).value = values[i] || "";
+    }
+
+    editModeId = id;
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function addEquipment(){
+
+    const main = {
+        ATK: Number(document.getElementById("mainATK").value || 0),
+        HP: Number(document.getElementById("mainHP").value || 0)
+    };
+
+    const sub = {};
+    const used = new Set();
+
+    for(let i=0;i<4;i++){
+
+        const name = document.getElementById("subName"+i).value;
+        const val = Number(document.getElementById("subVal"+i).value || 0);
+
+        if(name && !used.has(name)){
+            sub[name] = val;
+            used.add(name);
+        }
+    }
+
+    // ✅ EDIT MODE (update existing)
+    if(editModeId !== null){
+
+        const item = equipment.find(e => e.id === editModeId);
+        if(item){
+
+            item.main = main;
+            item.sub = sub;
+        }
+
+        editModeId = null;
+    }
+    else {
+        // NEW ITEM
+        equipment.push({
+            id: Date.now(),
+            main,
+            sub,
+            selected:false
+        });
+    }
+
+    save();
+    render();
+    clearForm();
 }
 
 // INIT
