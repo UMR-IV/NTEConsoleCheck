@@ -84,8 +84,8 @@ function importJSON(){
 
             save();
             render();
-
-            alert("Imported successfully!");
+            closeModal();
+            // alert("Imported successfully!");
 
         }catch(err){
             alert("Invalid JSON file");
