@@ -72,19 +72,39 @@ const characterProfiles = [
     {
         main: {
             Name: "Sakiri",
-            Element: "Unknown",
-            Role: "Unknown",
-            Level: 0,
-            Ascension: 0,
+            Element: "Incarnation",
+            Role: "Buff",
+            Level: 70,
+            Ascension: 5,
             Awakenings: []
         },
         base_attributes: {
-            HP: 0,
-            ATK: 0,
-            DEF: 0,
-            Stamina: 0,
-            Crit_Rate: 0,
-            Crit_DMG: 0
+            HP: 13886,
+            ATK: 1052,
+            DEF: 789,
+            Stamina: 200,
+            Crit_Rate: 5,
+            Crit_DMG: 54,
+            Charge_Efficiency: 0,
+            Cycle_Intensity: 0,
+            Break_Intensity: 0,
+            Healing_Bonus: 0,
+            Healing_Recieved_Bonus: 0,
+            Universal_DMG_Bonus: 0,
+            Cosmos_DMG_Bonus: 0,
+            Anima_DMG_Bonus: 0,
+            Incarnation_DMG_Bonus: 50,
+            Chaos_DMG_Bonus: 0,
+            Psyche_DMG_Bonus: 0,
+            Lakshana_DMG_Bonus: 0,
+            Mental_DMG_Bonus: 0,
+            Cosmos_Resistance: 0,
+            Anima_Resistance: 0,
+            Incarnation_Resistance: 0,
+            Chaos_Resistance: 0,
+            Psyche_Resistance: 0,
+            Lakshana_Resistance: 0,
+            Mental_Resistance: 0
         }
     }
 ];
