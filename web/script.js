@@ -12,6 +12,24 @@ const options = [
     "DMG %"
 ];
 
+const cartridgeMainStatOptions = [
+    "ATK %",
+    "DEF %",
+    "HP %",
+    "Crit Rate %",
+    "Crit DMG %",
+    "Break Intensity",
+    "Cycle Intensity",
+    "Universal DMG Bonus %",
+    "Cosmos DMG Bonus %",
+    "Anima DMG Bonus %",
+    "Incantation DMG Bonus %",
+    "Chaos DMG Bonus %",
+    "Psyche DMG Bonus %",
+    "Lakhshana DMG Bonus %",
+    "Healing Bonus %"
+];
+
 const tabs = ["character", "cartridge", "module"];
 const tabLabels = {
     character: "Character",
@@ -88,6 +106,52 @@ const emptyState = document.getElementById("emptyState");
 const contentArea = document.getElementById("contentArea");
 const panelTitle = document.getElementById("panelTitle");
 const modalTitle = document.getElementById("modalTitle");
+const selectedTitle = document.getElementById("selectedTitle");
+
+function getSelectionLimit(tab = activeTab) {
+    if (tab === "cartridge") {
+        return 1;
+    }
+
+    return 20;
+}
+
+function updateSelectedTitle(tab = activeTab) {
+    if (!selectedTitle) return;
+
+    if (tab === "cartridge") {
+        selectedTitle.textContent = "Selected:";
+    } else if (tab === "module") {
+        selectedTitle.textContent = "Selected (max 20)";
+    } else {
+        selectedTitle.textContent = "Selected";
+    }
+}
+
+function populateCartridgeMainSelect() {
+    const select = document.getElementById("cartridgeMainStat");
+    if (!select) return;
+
+    select.innerHTML = "";
+
+    const empty = document.createElement("option");
+    empty.value = "";
+    empty.textContent = "-- Select a main stat --";
+    select.appendChild(empty);
+
+    cartridgeMainStatOptions.forEach((option) => {
+        const opt = document.createElement("option");
+        opt.value = option;
+        opt.textContent = option;
+        select.appendChild(opt);
+    });
+}
+
+function setModalMode(tab) {
+    const isCartridge = tab === "cartridge";
+    document.getElementById("genericMainFields").classList.toggle("hidden", isCartridge);
+    document.getElementById("cartridgeMainFields").classList.toggle("hidden", !isCartridge);
+}
 
 function setActiveTab(tab) {
     activeTab = tab;
@@ -106,6 +170,8 @@ function setActiveTab(tab) {
 
     panelTitle.textContent = tabLabels[tab];
     modalTitle.textContent = `Add / Import ${tabLabels[tab]}`;
+    updateSelectedTitle(tab);
+    setModalMode(tab);
     render();
 }
 
@@ -153,11 +219,22 @@ function importJSON() {
     reader.readAsText(file);
 }
 
-function addEquipment() {
-    const main = {
+function getMainPayload() {
+    if (activeTab === "cartridge") {
+        const stat = document.getElementById("cartridgeMainStat").value;
+        const value = Number(document.getElementById("cartridgeMainValue").value || 0);
+
+        return stat ? { [stat]: value } : {};
+    }
+
+    return {
         ATK: Number(document.getElementById("mainATK").value || 0),
         HP: Number(document.getElementById("mainHP").value || 0)
     };
+}
+
+function addEquipment() {
+    const main = getMainPayload();
 
     const sub = {};
     const used = new Set();
@@ -202,8 +279,9 @@ function toggleSelect(id) {
 
     if (!item) return;
 
-    if (!item.selected && items.filter((entry) => entry.selected).length >= 20) {
-        alert("Max 20 selected");
+    const limit = getSelectionLimit();
+    if (!item.selected && items.filter((entry) => entry.selected).length >= limit) {
+        alert(`Max ${limit} selected`);
         return;
     }
 
@@ -222,11 +300,24 @@ function deleteItem(id) {
 function clearForm() {
     document.getElementById("mainATK").value = "";
     document.getElementById("mainHP").value = "";
+    document.getElementById("cartridgeMainStat").value = "";
+    document.getElementById("cartridgeMainValue").value = "";
 
     for (let i = 0; i < 4; i++) {
         document.getElementById("subName" + i).value = "";
         document.getElementById("subVal" + i).value = "";
     }
+}
+
+function formatMainSummary(entry) {
+    const main = entry.main || {};
+    const entries = Object.entries(main);
+
+    if (!entries.length) {
+        return "No main stats";
+    }
+
+    return entries.map(([key, value]) => `<b>${key}:</b> ${value}`).join("<br>");
 }
 
 function render() {
@@ -249,10 +340,9 @@ function render() {
         box.innerHTML = `
         <div class="cardTop">
             <div class="cardStats">
-                <b>ATK:</b> ${entry.main.ATK}<br>
-                <b>HP:</b> ${entry.main.HP}<br><br>
+                ${formatMainSummary(entry)}<br><br>
 
-                ${Object.entries(entry.sub)
+                ${Object.entries(entry.sub || {})
                     .map(([key, value]) => `${key}: ${value}`)
                     .join("<br>")}
             </div>
@@ -299,10 +389,17 @@ function editItem(id) {
 
     if (!item) return;
 
-    document.getElementById("mainATK").value = item.main.ATK;
-    document.getElementById("mainHP").value = item.main.HP;
+    if (activeTab === "cartridge") {
+        const entries = Object.entries(item.main || {});
+        const [stat, value] = entries[0] || [];
+        document.getElementById("cartridgeMainStat").value = stat || "";
+        document.getElementById("cartridgeMainValue").value = value ?? "";
+    } else {
+        document.getElementById("mainATK").value = item.main?.ATK ?? "";
+        document.getElementById("mainHP").value = item.main?.HP ?? "";
+    }
 
-    const keys = Object.keys(item.sub);
+    const keys = Object.keys(item.sub || {});
     const values = Object.values(item.sub);
 
     for (let i = 0; i < 4; i++) {
@@ -315,5 +412,7 @@ function editItem(id) {
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+populateCartridgeMainSelect();
 loadData();
+setModalMode(activeTab);
 setActiveTab(activeTab);

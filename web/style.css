@@ -248,6 +248,24 @@ button{
     margin:10px 0;
 }
 
+.jsonArea{
+    width:100%;
+    box-sizing:border-box;
+    padding:10px;
+    border-radius:8px;
+    border:none;
+    resize:vertical;
+    min-height:130px;
+    font-family:inherit;
+}
+
+.helperText{
+    color:#cbd5e1;
+    font-size:0.95rem;
+    margin-top:-4px;
+    margin-bottom:8px;
+}
+
 .modalActions{
     text-align:right;
     margin-top:10px;

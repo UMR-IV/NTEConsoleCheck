@@ -26,7 +26,7 @@
 
         <div id="contentArea" class="hidden">
             <div class="card">
-                <h2>Selected (max 20)</h2>
+                <h2 id="selectedTitle">Selected</h2>
                 <div id="selected" class="grid"></div>
             </div>
 
@@ -61,7 +61,7 @@
 
         <hr>
 
-        <div class="card">
+        <div id="genericMainFields" class="card">
             <h3>Main Stats</h3>
 
             <div class="row">
@@ -72,6 +72,19 @@
             <div class="row">
                 <label>HP</label>
                 <input type="number" id="mainHP">
+            </div>
+        </div>
+
+        <div id="cartridgeMainFields" class="card hidden">
+            <h3>Main Stats</h3>
+            <p class="helperText">Choose one main stat from the dropdown and set its value.</p>
+            <div class="row">
+                <label>Stat</label>
+                <select id="cartridgeMainStat"></select>
+            </div>
+            <div class="row">
+                <label>Value</label>
+                <input type="number" id="cartridgeMainValue">
             </div>
         </div>
 
