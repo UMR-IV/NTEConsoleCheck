@@ -1,2 +1,2 @@
 # NTE Console Check
-Meow~ meow~
+Nyan~ nyan~
