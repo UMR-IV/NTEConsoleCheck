@@ -113,16 +113,16 @@ function getSelectionLimit(tab = activeTab) {
         return 1;
     }
 
-    return 20;
+    return 10;
 }
 
 function updateSelectedTitle(tab = activeTab) {
     if (!selectedTitle) return;
 
     if (tab === "cartridge") {
-        selectedTitle.textContent = "Selected:";
+        selectedTitle.textContent = "Selected";
     } else if (tab === "module") {
-        selectedTitle.textContent = "Selected (max 20)";
+        selectedTitle.textContent = "Selected";
     } else {
         selectedTitle.textContent = "Selected";
     }
