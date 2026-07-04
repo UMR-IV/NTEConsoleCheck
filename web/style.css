@@ -75,9 +75,6 @@ button{
     display:grid;
     grid-template-columns:repeat(4,1fr);
     gap:12px;
-
-    max-height:550px;
-    overflow-y:auto;
 }
 
 .cardBox{
@@ -96,10 +93,6 @@ button{
     display:grid;
     grid-template-columns:repeat(4,1fr);
     gap:12px;
-
-    max-height:500px;
-    overflow-y:auto;
-
     padding-right:5px;
 }
 

@@ -30,6 +30,65 @@ const cartridgeMainStatOptions = [
     "Healing Bonus %"
 ];
 
+const characterProfiles = [
+    {
+        main: {
+            Name: "Lacrimosa",
+            Element: "Chaos",
+            Role: "DPS",
+            Level: 70,
+            Ascension: 5,
+            Awakenings: [6]
+        },
+        base_attributes: {
+            HP: 13886,
+            ATK: 1052,
+            DEF: 789,
+            Stamina: 200,
+            Crit_Rate: 5,
+            Crit_DMG: 54,
+            Charge_Efficiency: 0,
+            Cycle_Intensity: 0,
+            Break_Intensity: 0,
+            Healing_Bonus: 0,
+            Healing_Recieved_Bonus: 0,
+            Universal_DMG_Bonus: 0,
+            Cosmos_DMG_Bonus: 0,
+            Anima_DMG_Bonus: 0,
+            Incarnation_DMG_Bonus: 0,
+            Chaos_DMG_Bonus: 50,
+            Psyche_DMG_Bonus: 0,
+            Lakshana_DMG_Bonus: 0,
+            Mental_DMG_Bonus: 0,
+            Cosmos_Resistance: 0,
+            Anima_Resistance: 0,
+            Incarnation_Resistance: 0,
+            Chaos_Resistance: 0,
+            Psyche_Resistance: 0,
+            Lakshana_Resistance: 0,
+            Mental_Resistance: 0
+        }
+    },
+    {
+        main: {
+            Name: "Sakiri",
+            Element: "Unknown",
+            Role: "Unknown",
+            Level: 0,
+            Ascension: 0,
+            Awakenings: []
+        },
+        base_attributes: {
+            HP: 0,
+            ATK: 0,
+            DEF: 0,
+            Stamina: 0,
+            Crit_Rate: 0,
+            Crit_DMG: 0
+        }
+    }
+];
+
 const arcData = [
     {"name":"Blow up the Crowd","icon":"Solid","stat":"ATK +27.5%","effect":"Active character ATK +10% while the wearer is off-field, and ATK +2% when the wearer deals damage, up to 4 stacks (once every 2s). Resets when switching in. Psyche DMG +12% while active, and Psyche DMG +2% when dealing Psyche DMG with Basic Attack, up to 10 stacks (once every 0.3s). Resets when switching characters."},
     {"name":"Blushing Mirage","icon":"Condensate","stat":"TBD","effect":"TBD"},
@@ -197,6 +256,52 @@ function populateCartridgeMainSelect() {
     });
 }
 
+function populateCharacterSelect() {
+    const select = document.getElementById("characterName");
+    if (!select) return;
+
+    select.innerHTML = "";
+
+    const empty = document.createElement("option");
+    empty.value = "";
+    empty.textContent = "-- Select a character --";
+    select.appendChild(empty);
+
+    characterProfiles.forEach((character) => {
+        const option = document.createElement("option");
+        const characterName = character.main?.Name || character.name;
+        option.value = characterName;
+        option.textContent = characterName;
+        select.appendChild(option);
+    });
+}
+
+function updateCharacterDetails() {
+    const select = document.getElementById("characterName");
+    const detailsBox = document.getElementById("characterDetails");
+
+    if (!select || !detailsBox) return;
+
+    const profile = characterProfiles.find((character) => (character.main?.Name || character.name) === select.value);
+
+    if (!profile) {
+        detailsBox.innerHTML = "Select a character to see details.";
+        return;
+    }
+
+    const main = profile.main || {};
+    const attrs = profile.base_attributes || {};
+    detailsBox.innerHTML = `
+        <b>Element:</b> ${main.Element || "—"}<br>
+        <b>Role:</b> ${main.Role || "—"}<br>
+        <b>Level:</b> ${main.Level ?? "—"}<br>
+        <b>Ascension:</b> ${main.Ascension ?? "—"}<br>
+        <b>HP:</b> ${attrs.HP ?? 0}<br>
+        <b>ATK:</b> ${attrs.ATK ?? 0}<br>
+        <b>DEF:</b> ${attrs.DEF ?? 0}
+    `;
+}
+
 function populateArcSelect() {
     const select = document.getElementById("arcName");
     const typeSelect = document.getElementById("arcType");
@@ -280,11 +385,13 @@ function updateArcEffectPreview() {
 function setModalMode(tab) {
     const isCartridge = tab === "cartridge";
     const isArc = tab === "arc";
+    const isCharacter = tab === "character";
 
-    document.getElementById("genericMainFields").classList.toggle("hidden", isCartridge || isArc);
+    document.getElementById("characterDetailsFields").classList.toggle("hidden", !isCharacter);
+    document.getElementById("genericMainFields").classList.toggle("hidden", isCartridge || isArc || isCharacter);
     document.getElementById("cartridgeMainFields").classList.toggle("hidden", !isCartridge);
     document.getElementById("arcMainFields").classList.toggle("hidden", !isArc);
-    document.getElementById("subStatsCard").classList.toggle("hidden", isArc);
+    document.getElementById("subStatsCard").classList.toggle("hidden", isArc || isCharacter);
 }
 
 function setActiveTab(tab) {
@@ -295,8 +402,8 @@ function setActiveTab(tab) {
     });
 
     if (tab === "character") {
-        emptyState.classList.remove("hidden");
-        contentArea.classList.add("hidden");
+        emptyState.classList.add("hidden");
+        contentArea.classList.remove("hidden");
     } else {
         emptyState.classList.add("hidden");
         contentArea.classList.remove("hidden");
@@ -353,7 +460,22 @@ function importJSON() {
     reader.readAsText(file);
 }
 
+function getSelectedCharacterProfile() {
+    const characterName = document.getElementById("characterName").value;
+    return characterProfiles.find((character) => (character.main?.Name || character.name) === characterName);
+}
+
 function getMainPayload() {
+    if (activeTab === "character") {
+        const profile = getSelectedCharacterProfile();
+
+        if (!profile) {
+            return {};
+        }
+
+        return profile.main || {};
+    }
+
     if (activeTab === "cartridge") {
         const stat = document.getElementById("cartridgeMainStat").value;
         const value = Number(document.getElementById("cartridgeMainValue").value || 0);
@@ -399,13 +521,22 @@ function addEquipment() {
         }
     }
 
+    const profile = activeTab === "character" ? getSelectedCharacterProfile() : null;
+    const baseAttributes = activeTab === "character" ? (profile?.base_attributes || {}) : null;
+
     const items = getCurrentItems();
 
     if (editModeId !== null) {
         const item = items.find((entry) => entry.id === editModeId);
         if (item) {
             item.main = main;
-            item.sub = sub;
+
+            if (activeTab === "character") {
+                item.base_attributes = baseAttributes;
+                delete item.sub;
+            } else {
+                item.sub = sub;
+            }
 
             if (activeTab === "arc") {
                 item.arcName = document.getElementById("arcName").value;
@@ -418,9 +549,14 @@ function addEquipment() {
         const newItem = {
             id: Date.now(),
             main,
-            sub,
             selected: false
         };
+
+        if (activeTab === "character") {
+            newItem.base_attributes = baseAttributes;
+        } else {
+            newItem.sub = sub;
+        }
 
         if (activeTab === "arc") {
             newItem.arcName = document.getElementById("arcName").value;
@@ -466,6 +602,8 @@ function clearForm() {
     document.getElementById("mainHP").value = "";
     document.getElementById("cartridgeMainStat").value = "";
     document.getElementById("cartridgeMainValue").value = "";
+    document.getElementById("characterName").value = "";
+    document.getElementById("characterDetails").innerHTML = "Select a character to see details.";
     document.getElementById("arcName").value = "";
     document.getElementById("arcType").value = "";
     document.getElementById("arcATKPercent").value = "";
@@ -496,10 +634,6 @@ function render() {
     selDiv.innerHTML = "";
     libDiv.innerHTML = "";
 
-    if (activeTab === "character") {
-        return;
-    }
-
     const items = getCurrentItems();
 
     items.forEach((entry) => {
@@ -514,7 +648,13 @@ function render() {
             ? `<br><br><b>Arc:</b> ${entry.arcName || "—"}<br><b>Type:</b> ${entry.arcType || "—"}<b>Effect:</b> ${entry.effect || "—"}`
             : "";
 
-        const subSummary = activeTab === "arc"
+        const characterInfo = activeTab === "character"
+            ? `<br><br><b>Base Attributes:</b><br>${Object.entries(entry.base_attributes || {})
+                .map(([key, value]) => `${key}: ${value}`)
+                .join("<br>")}`
+            : "";
+
+        const subSummary = activeTab === "arc" || activeTab === "character"
             ? ""
             : Object.entries(entry.sub || {})
                 .map(([key, value]) => `${key}: ${value}`)
@@ -523,7 +663,7 @@ function render() {
         box.innerHTML = `
         <div class="cardTop">
             <div class="cardStats">
-                <br>${formatMainSummary(entry)}${arcInfo}${subSummary ? `<br><br>${subSummary}` : ""}
+                ${formatMainSummary(entry)}${arcInfo}${characterInfo}${subSummary ? `<br><br>${subSummary}` : ""}
             </div>
 
             <button class="editBtn" onclick="editItem(${entry.id})">✏️</button>
@@ -598,8 +738,10 @@ function editItem(id) {
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+populateCharacterSelect();
 populateCartridgeMainSelect();
 populateArcSelect();
+document.getElementById("characterName").addEventListener("change", updateCharacterDetails);
 document.getElementById("arcName").addEventListener("change", updateArcEffectPreview);
 document.getElementById("arcType").addEventListener("change", updateArcNameOptions);
 loadData();
