@@ -668,11 +668,7 @@ function render() {
             ? `<br><br><b>Arc:</b> ${entry.arcName || "—"}<br><b>Type:</b> ${entry.arcType || "—"}<b>Effect:</b> ${entry.effect || "—"}`
             : "";
 
-        const characterInfo = activeTab === "character"
-            ? `<br><br><b>Base Attributes:</b><br>${Object.entries(entry.base_attributes || {})
-                .map(([key, value]) => `${key}: ${value}`)
-                .join("<br>")}`
-            : "";
+        const characterInfo = "";
 
         const subSummary = activeTab === "arc" || activeTab === "character"
             ? ""
