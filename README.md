@@ -1,2 +1,2 @@
 # NTE Console Check
-Nya~ nya~
+Nyan~ nyan~
