@@ -30,18 +30,70 @@ const cartridgeMainStatOptions = [
     "Healing Bonus %"
 ];
 
-const tabs = ["character", "cartridge", "module"];
+const arcData = [
+    {"name":"Blow up the Crowd","icon":"Solid","stat":"ATK +27.5%","effect":"Active character ATK +10% while the wearer is off-field, and ATK +2% when the wearer deals damage, up to 4 stacks (once every 2s). Resets when switching in. Psyche DMG +12% while active, and Psyche DMG +2% when dealing Psyche DMG with Basic Attack, up to 10 stacks (once every 0.3s). Resets when switching characters."},
+    {"name":"Blushing Mirage","icon":"Condensate","stat":"TBD","effect":"TBD"},
+    {"name":"Camellia Society","icon":"Condensate","stat":"CRIT Rate +12%","effect":"CRIT DMG +12% for 5s when HP is reduced without taking damage, up to 4 stacks. Unlocks Arc: Silent Garden with random Incantation DMG attacks."},
+    {"name":"Contemplative Cat","icon":"Gas","stat":"CRIT DMG +44%","effect":"Increases Cosmos DMG by 2.5% per 100000 Fons held, up to 10 stacks."},
+    {"name":"Day Off","icon":"Solid","stat":"Charge Efficiency +33%","effect":"Increases ATK by 30%. Unlocks Arc: Eclipse (40s duration, restores Ultimate Energy on enemy defeat)."},
+    {"name":"Eternal Waltz","icon":"Condensate","stat":"HP +41.2%","effect":"Increases Max HP by 20%. Increases Mental DMG by 10% for 10s after casting Ultimate."},
+    {"name":"Fluff of Fearlessness","icon":"Solid","stat":"CRIT Rate +22%","effect":"Increases ATK by 25% for 10s after casting Ultimate. Does not stack."},
+    {"name":"Fluff of Ferocity","icon":"Condensate","stat":"ATK +27.5%","effect":"Increases CRIT DMG by 4% for 10s after landing a critical hit, up to 10 stacks. Duration resets when retriggered."},
+    {"name":"Fluff of Finesse","icon":"Gas","stat":"ATK +27.5%","effect":"Increases damage by 8% for 10s after Critical Dodge, up to 3 stacks. Duration resets when retriggered."},
+    {"name":"Fluff of Fleetness","icon":"Liquid","stat":"CRIT DMG +44%","effect":"Increases ATK by 5% every interval while active, up to 5 stacks. Resets when leaving field."},
+    {"name":"Fluff of Fortitude","icon":"Plasma","stat":"ATK +27.5%","effect":"Increases DMG by 22%. Effect increases to 28% against enemies below 50% HP."},
+    {"name":"Good Boy's Grand Adventure","icon":"Gas","stat":"ATK +45%","effect":"Increases Charge Efficiency by 18%. Increases Team ATK by 10% (20s) after Ultimate, plus 6% if enemies are controlled."},
+    {"name":"Hethereau's Keeper","icon":"Solid","stat":"ATK +27.5%","effect":"Increases ATK by 15%. Increases Boss damage by 15%. Unlocks Arc: Officer Whisker (summons ally for 30s)."},
+    {"name":"Marching Beyond Time","icon":"Solid","stat":"CRIT Rate +24%","effect":"Increases ATK by 16%. Grants Wastetime stacks in Wastelab, consumed for Ultimate Crit DMG and DEF Ignore."},
+    {"name":"Raging Flames","icon":"Plasma","stat":"CRIT DMG +24%","effect":"Increases Lakshana DMG by 15%. Redirect Skill & Ultimate DMG +10% for 10s after Ultimate. Redirect Skill DMG +5% per cast (up to 2)."},
+    {"name":"Ready-Ready","icon":"Plasma","stat":"CRIT Rate +24%","effect":"Increases ATK by 15%. Boosts Basic Attack & Critical Riposte DMG by 15% for 15s after Redirect/Ultimate. Unlocks Commander Tiger Talisman Arc."},
+    {"name":"Reality Refuge","icon":"Solid","stat":"ATK +30%","effect":"Increases Anima DMG by 15%. Attachment DMG +10% (20% for 6s after Ultimate)."},
+    {"name":"Song of the Whale","icon":"Plasma","stat":"ATK +27.5%","effect":"ATK +12%. Damage to Broken enemies +12%. Restores 30% HP when defeating Broken enemy (once every 30s)."},
+    {"name":"Stellar Veil","icon":"Plasma","stat":"ATK +27.5%","effect":"Psyche DMG +12%. Crit DMG +2% for 5s when dealing Psyche DMG, up to 10 stacks (once every 0.1s)."},
+    {"name":"Tears Beneath the Mask","icon":"Gas","stat":"ATK +27.5%","effect":"Applies Warning Gaze on enemies hit by Ultimate. Marked enemies deal 18% reduced damage for 20s."},
+    {"name":"The Last Rose","icon":"Liquid","stat":"CRIT Rate +24%","effect":"ATK +14%. Grants Chaos Thorn stacks on DOT. CRIT DMG +6% per stack (up to 10). Grants 10 stacks on Redirect Skill. Extends Broken state by 3s."},
+    {"name":"The Rain That Shook the World","icon":"Solid","stat":"CRIT Rate +22%","effect":"Cosmos DMG +30% with Redirect/Ultimate. Cycle Intensity +36 for 15s after Redirect Skill."},
+    {"name":"What's Desired","icon":"Condensate","stat":"CRIT Rate +24%","effect":"Lakshana DMG +20%. CRIT DMG +40% for 20s after Redirect/Ultimate."},
+    {"name":"Wrong Gate","icon":"Liquid","stat":"TBD","effect":"TBD"},
+    {"name":"Your Happiness is Priceless","icon":"Solid","stat":"DEF +38.5%","effect":"HP +24%. Grants random healing/shield effects after Ultimate (once every 30s)."},
+    {"name":"Youthful Fantasy","icon":"Liquid","stat":"ATK +30%","effect":"Break Intensity +60. Unlocks Arc: Black Tome (summons tome, boosts Chaos DMG, deals Chaos DMG on Break)."},
+    {"name":"Real Music","icon":"Liquid","stat":"ATK +20%","effect":"Redirect Skill DMG +12%."},
+    {"name":"Be Happy","icon":"Gas","stat":"HP +30%","effect":"Restores 12% HP upon defeating enemy (once every 20s)."},
+    {"name":"Dangerous Game","icon":"Condensate","stat":"Break Intensity +96","effect":"Break Intensity +60 for 10s when reducing Break (once every 20s)."},
+    {"name":"First Step to Success","icon":"Solid","stat":"ATK +20%","effect":"ATK +12% for 10s when casting Redirect Skill (once every 20s)."},
+    {"name":"Us.","icon":"Plasma","stat":"ATK +20%","effect":"Basic Attack DMG +12%."},
+    {"name":"A Time Will Come","icon":"Condensate","stat":"CRIT Rate +20%","effect":"Grants the wearer 10% ATK, 10% DEF, and 10% HP when the team has at least 3 different Esper Types."},
+    {"name":"Call of the Twisted City","icon":"Liquid","stat":"HP +37.5%","effect":"Increases Healing Bonus by 12% for 10s after casting a Redirect Skill. Effect does not stack."},
+    {"name":"Clear Skies","icon":"Liquid","stat":"ATK +25%","effect":"Increases Anima DMG dealt by Redirect Skill and Ultimate by 20%."},
+    {"name":"Cosmos Daze, Wild Reverie","icon":"Gas","stat":"ATK +25%","effect":"Increases damage dealt by 18% for 10s after casting Support Skill. Triggers at most once every 20s."},
+    {"name":"Drawn Blade","icon":"Plasma","stat":"ATK +37.5%","effect":"Deals additional Incantation DMG equal to 200% of ATK when triggering a Parry Attack."},
+    {"name":"Failing You, Heavy in My Heart","icon":"Gas","stat":"Break Intensity +120","effect":"Grants 1 stack of Spider Knowledge when dealing damage with Basic Attacks (up to 8 stacks). All stacks consumed when casting Ultimate, increasing team ATK by 1% per stack for 10s. Additional +2% ATK when 8 stacks are consumed."},
+    {"name":"Mind Royale","icon":"Liquid","stat":"Break Intensity +60","effect":"Grants 10 Ultimate Energy when casting a Redirect Skill (once every 20s)."},
+    {"name":"Oraora!","icon":"Plasma","stat":"ATK +37.5%","effect":"Increases Basic Attack DMG by 2% for 10s after each Basic Attack, up to 10 stacks. Each stack lasts independently."},
+    {"name":"Shiny Days","icon":"Liquid","stat":"ATK +25%","effect":"Break Intensity +48. Increases DMG by 10% against Broken units."},
+    {"name":"The Fools' Spring","icon":"Condensate","stat":"DEF +52.5%","effect":"Increases ATK by 18% while the wearer has a Shield."},
+    {"name":"The Forgotten","icon":"Solid","stat":"HP +25%","effect":"ATK +20% when HP is above 50%; DEF +20% when HP is below 50%."},
+    {"name":"The Good, The Bad, The Bitter","icon":"Condensate","stat":"HP +25%","effect":"Increases DEF by 26% for 10s when taking damage (once every 20s)."},
+    {"name":"The Great Thief","icon":"Condensate","stat":"Break Intensity +120","effect":"Increases Break Intensity by 70 for all characters of the same Esper Type when the team has 3 or more of that type. Effect does not stack."},
+    {"name":"Time Bandit","icon":"Solid","stat":"HP +25%","effect":"Break Intensity +90 for 10s after casting Redirect Skill. Unlocks Arc: Picky (summons Picky to unlock nearby objects)."},
+    {"name":"Umbrella","icon":"Condensate","stat":"DEF +52.5%","effect":"HP +10%. Strengthens shields by 10% while HP is above 50%."},
+    {"name":"Watch Your Heads!","icon":"Gas","stat":"CRIT DMG +40%","effect":"ATK +10% and Lakshana DMG +10% to targets affected by Remora and Stain for 15s after casting Redirect Skill. Effect does not stack."}
+];
+
+const tabs = ["character", "cartridge", "module", "arc"];
 const tabLabels = {
     character: "Character",
     cartridge: "Cartridge",
-    module: "Module"
+    module: "Module",
+    arc: "Arc"
 };
 
 let activeTab = "character";
 let data = {
     character: [],
     cartridge: [],
-    module: []
+    module: [],
+    arc: []
 };
 
 let editModeId = null;
@@ -109,7 +161,7 @@ const modalTitle = document.getElementById("modalTitle");
 const selectedTitle = document.getElementById("selectedTitle");
 
 function getSelectionLimit(tab = activeTab) {
-    if (tab === "cartridge") {
+    if (tab === "cartridge" || tab === "arc") {
         return 1;
     }
 
@@ -119,10 +171,8 @@ function getSelectionLimit(tab = activeTab) {
 function updateSelectedTitle(tab = activeTab) {
     if (!selectedTitle) return;
 
-    if (tab === "cartridge") {
-        selectedTitle.textContent = "Selected";
-    } else if (tab === "module") {
-        selectedTitle.textContent = "Selected";
+    if (tab === "arc") {
+        selectedTitle.textContent = "Selected Arc";
     } else {
         selectedTitle.textContent = "Selected";
     }
@@ -147,10 +197,94 @@ function populateCartridgeMainSelect() {
     });
 }
 
+function populateArcSelect() {
+    const select = document.getElementById("arcName");
+    const typeSelect = document.getElementById("arcType");
+
+    if (!select) return;
+
+    if (!typeSelect) return;
+
+    typeSelect.innerHTML = "";
+
+    const typeEmpty = document.createElement("option");
+    typeEmpty.value = "";
+    typeEmpty.textContent = "-- Select a type --";
+    typeSelect.appendChild(typeEmpty);
+
+    [...new Set(arcData.map((arc) => arc.icon).filter(Boolean))].forEach((icon) => {
+        const option = document.createElement("option");
+        option.value = icon;
+        option.textContent = icon;
+        typeSelect.appendChild(option);
+    });
+
+    updateArcNameOptions();
+}
+
+function updateArcNameOptions() {
+    const select = document.getElementById("arcName");
+    const typeSelect = document.getElementById("arcType");
+
+    if (!select || !typeSelect) return;
+
+    const selectedType = typeSelect.value;
+    const currentValue = select.value;
+
+    select.innerHTML = "";
+
+    const empty = document.createElement("option");
+    empty.value = "";
+    empty.textContent = "-- Select an Arc --";
+    select.appendChild(empty);
+
+    const filteredArcs = selectedType
+        ? arcData.filter((arc) => arc.icon === selectedType)
+        : arcData;
+
+    filteredArcs.forEach((arc) => {
+        const opt = document.createElement("option");
+        opt.value = arc.name;
+        opt.textContent = arc.name;
+        select.appendChild(opt);
+    });
+
+    if (currentValue && filteredArcs.some((arc) => arc.name === currentValue)) {
+        select.value = currentValue;
+    } else {
+        select.value = "";
+    }
+
+    updateArcEffectPreview();
+}
+
+function updateArcEffectPreview() {
+    const select = document.getElementById("arcName");
+    const typeSelect = document.getElementById("arcType");
+    const specificStatInput = document.getElementById("arcSpecificStat");
+    const effectBox = document.getElementById("arcEffect");
+
+    if (!select || !typeSelect || !specificStatInput || !effectBox) return;
+
+    const selectedArc = arcData.find((arc) => arc.name === select.value);
+
+    if (selectedArc) {
+        typeSelect.value = selectedArc.icon || "";
+        specificStatInput.value = selectedArc.stat || "";
+        effectBox.textContent = selectedArc.effect || "";
+    } else {
+        effectBox.textContent = "Choose an arc to see its effect.";
+    }
+}
+
 function setModalMode(tab) {
     const isCartridge = tab === "cartridge";
-    document.getElementById("genericMainFields").classList.toggle("hidden", isCartridge);
+    const isArc = tab === "arc";
+
+    document.getElementById("genericMainFields").classList.toggle("hidden", isCartridge || isArc);
     document.getElementById("cartridgeMainFields").classList.toggle("hidden", !isCartridge);
+    document.getElementById("arcMainFields").classList.toggle("hidden", !isArc);
+    document.getElementById("subStatsCard").classList.toggle("hidden", isArc);
 }
 
 function setActiveTab(tab) {
@@ -227,6 +361,22 @@ function getMainPayload() {
         return stat ? { [stat]: value } : {};
     }
 
+    if (activeTab === "arc") {
+        const main = {};
+        const atkPercent = document.getElementById("arcATKPercent").value;
+        const specificStat = document.getElementById("arcSpecificStat").value.trim();
+
+        if (atkPercent !== "") {
+            main["ATK %"] = Number(atkPercent);
+        }
+
+        if (specificStat) {
+            main["Specific Stat"] = specificStat;
+        }
+
+        return main;
+    }
+
     return {
         ATK: Number(document.getElementById("mainATK").value || 0),
         HP: Number(document.getElementById("mainHP").value || 0)
@@ -256,15 +406,29 @@ function addEquipment() {
         if (item) {
             item.main = main;
             item.sub = sub;
+
+            if (activeTab === "arc") {
+                item.arcName = document.getElementById("arcName").value;
+                item.arcType = document.getElementById("arcType").value;
+                item.effect = document.getElementById("arcEffect").textContent.trim();
+            }
         }
         editModeId = null;
     } else {
-        items.push({
+        const newItem = {
             id: Date.now(),
             main,
             sub,
             selected: false
-        });
+        };
+
+        if (activeTab === "arc") {
+            newItem.arcName = document.getElementById("arcName").value;
+            newItem.arcType = document.getElementById("arcType").value;
+            newItem.effect = document.getElementById("arcEffect").textContent.trim();
+        }
+
+        items.push(newItem);
     }
 
     save();
@@ -302,6 +466,11 @@ function clearForm() {
     document.getElementById("mainHP").value = "";
     document.getElementById("cartridgeMainStat").value = "";
     document.getElementById("cartridgeMainValue").value = "";
+    document.getElementById("arcName").value = "";
+    document.getElementById("arcType").value = "";
+    document.getElementById("arcATKPercent").value = "";
+    document.getElementById("arcSpecificStat").value = "";
+    document.getElementById("arcEffect").textContent = "Choose an arc to see its effect.";
 
     for (let i = 0; i < 4; i++) {
         document.getElementById("subName" + i).value = "";
@@ -337,14 +506,24 @@ function render() {
         const box = document.createElement("div");
         box.className = "cardBox";
 
+        const specificStatLine = activeTab === "arc" && entry.main?.["Specific Stat"]
+            ? `<br><b>Specific Stat:</b>${entry.main["Specific Stat"]}`
+            : "";
+
+        const arcInfo = activeTab === "arc"
+            ? `<br><br><b>Arc:</b> ${entry.arcName || "—"}<br><b>Type:</b> ${entry.arcType || "—"}<b>Effect:</b> ${entry.effect || "—"}`
+            : "";
+
+        const subSummary = activeTab === "arc"
+            ? ""
+            : Object.entries(entry.sub || {})
+                .map(([key, value]) => `${key}: ${value}`)
+                .join("<br>");
+
         box.innerHTML = `
         <div class="cardTop">
             <div class="cardStats">
-                ${formatMainSummary(entry)}<br><br>
-
-                ${Object.entries(entry.sub || {})
-                    .map(([key, value]) => `${key}: ${value}`)
-                    .join("<br>")}
+                <br>${formatMainSummary(entry)}${arcInfo}${subSummary ? `<br><br>${subSummary}` : ""}
             </div>
 
             <button class="editBtn" onclick="editItem(${entry.id})">✏️</button>
@@ -369,7 +548,8 @@ function downloadJSON() {
     const blob = new Blob([JSON.stringify({
         character: data.character,
         cartridge: data.cartridge,
-        module: data.module
+        module: data.module,
+        arc: data.arc
     }, null, 2)], {
         type: "application/json"
     });
@@ -394,6 +574,12 @@ function editItem(id) {
         const [stat, value] = entries[0] || [];
         document.getElementById("cartridgeMainStat").value = stat || "";
         document.getElementById("cartridgeMainValue").value = value ?? "";
+    } else if (activeTab === "arc") {
+        document.getElementById("arcName").value = item.arcName || "";
+        document.getElementById("arcType").value = item.arcType || "";
+        document.getElementById("arcATKPercent").value = item.main?.["ATK %"] ?? "";
+        document.getElementById("arcSpecificStat").value = item.main?.["Specific Stat"] ?? "";
+        document.getElementById("arcEffect").textContent = item.effect || "Choose an arc to see its effect.";
     } else {
         document.getElementById("mainATK").value = item.main?.ATK ?? "";
         document.getElementById("mainHP").value = item.main?.HP ?? "";
@@ -413,6 +599,9 @@ function editItem(id) {
 }
 
 populateCartridgeMainSelect();
+populateArcSelect();
+document.getElementById("arcName").addEventListener("change", updateArcEffectPreview);
+document.getElementById("arcType").addEventListener("change", updateArcNameOptions);
 loadData();
 setModalMode(activeTab);
 setActiveTab(activeTab);

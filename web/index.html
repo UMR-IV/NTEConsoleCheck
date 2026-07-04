@@ -15,6 +15,7 @@
         <button class="tabBtn active" data-tab="character">Character</button>
         <button class="tabBtn" data-tab="cartridge">Cartridge</button>
         <button class="tabBtn" data-tab="module">Module</button>
+        <button class="tabBtn" data-tab="arc">Arc</button>
     </div>
 
     <div class="card">
@@ -88,7 +89,28 @@
             </div>
         </div>
 
-        <div class="card">
+        <div id="arcMainFields" class="card hidden">
+            <h3>Arc Details</h3>
+            <div class="row">
+                <label>Arc</label>
+                <select id="arcName"></select>
+            </div>
+            <div class="row">
+                <label>Type</label>
+                <select id="arcType"></select>
+            </div>
+            <div class="row">
+                <label>ATK %</label>
+                <input type="number" id="arcATKPercent" step="0.1">
+            </div>
+            <div class="row">
+                <label>Specific Stat</label>
+                <input type="text" id="arcSpecificStat" placeholder="e.g. CRIT Rate +12%">
+            </div>
+            <p id="arcEffect" class="helperText">Choose an arc to see its effect.</p>
+        </div>
+
+        <div id="subStatsCard" class="card">
             <h3>Sub Stats</h3>
             <div id="subStats"></div>
         </div>
