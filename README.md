@@ -1,2 +1,2 @@
-# Console optimizer
+# NTE Console Check
 Meow~ meow~
